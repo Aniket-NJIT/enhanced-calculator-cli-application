@@ -14,7 +14,8 @@ def history_manager(tmp_path):
 def test_add_record(history_manager):
     history_manager.add_record("add", 5, 5, 10)
     assert len(history_manager.history) == 1
-    assert history_manager.history[0]["operation"] == "add"
+    # Check object attribute instead of dictionary key
+    assert history_manager.history[0].operation == "add"
 
 def test_undo_redo(history_manager):
     history_manager.add_record("add", 1, 1, 2)
@@ -23,12 +24,12 @@ def test_undo_redo(history_manager):
     # State has 2 records. Undo should take us back to 1.
     assert history_manager.undo() is True
     assert len(history_manager.history) == 1
-    assert history_manager.history[0]["operation"] == "add"
+    assert history_manager.history[0].operation == "add"
     
     # Redo should bring back the subtract record.
     assert history_manager.redo() is True
     assert len(history_manager.history) == 2
-    assert history_manager.history[1]["operation"] == "subtract"
+    assert history_manager.history[1].operation == "subtract"
 
 def test_empty_undo_redo(history_manager):
     assert history_manager.undo() is False
@@ -38,7 +39,8 @@ def test_clear_history(history_manager):
     history_manager.add_record("add", 1, 1, 2)
     history_manager.clear()
     assert len(history_manager.history) == 0
-    # ensure clear can be undone
+    
+    # Ensure clear can be undone
     history_manager.undo()
     assert len(history_manager.history) == 1
 
@@ -56,7 +58,7 @@ def test_save_and_load_csv(history_manager):
     
     count = history_manager.load_from_csv()
     assert count == 2
-    assert history_manager.history[0]["operation"] == "multiply"
+    assert history_manager.history[0].operation == "multiply"
 
 def test_load_nonexistent_csv(history_manager):
     with pytest.raises(FileNotFoundError):
