@@ -1,7 +1,7 @@
 import pytest
 import os
 import pandas as pd
-from app.history import HistoryManager
+from app.history import HistoryManager, auto_save_observer
 from app.calculator_config import Config
 
 @pytest.fixture
@@ -63,3 +63,22 @@ def test_save_and_load_csv(history_manager):
 def test_load_nonexistent_csv(history_manager):
     with pytest.raises(FileNotFoundError):
         history_manager.load_from_csv()
+
+def test_auto_save_observer(history_manager, tmp_path):
+    # Temporarily enable auto-save for this specific test
+    Config.AUTO_SAVE = True
+    Config.HISTORY_FILE = os.path.join(tmp_path, "auto_save_test.csv")
+    
+    # Attach the observer so it actually listens!
+    history_manager.add_observer(auto_save_observer)
+
+    # Adding a record triggers the auto_save_observer (creates file)
+    history_manager.add_record("add", 10, 10, 20)
+    assert os.path.exists(Config.HISTORY_FILE)
+    
+    # Add another record to test the 'append' functionality
+    history_manager.add_record("subtract", 20, 10, 10)
+    
+    # Verify pandas wrote both lines
+    df = pd.read_csv(Config.HISTORY_FILE)
+    assert len(df) == 2
