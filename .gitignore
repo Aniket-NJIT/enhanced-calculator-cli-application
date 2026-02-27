@@ -1,0 +1,24 @@
+# Environments
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest and Coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local configuration file
+.env
+
+# Application Logs and Data History
+logs/
+history/
+
+# IDE and OS specific files
+.vscode/
+.idea/
+.DS_Store
